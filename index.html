@@ -10,78 +10,82 @@
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════
      SCREEN 1: WELCOME
-══════════════════════════════════════════════════════ -->
+     Loaded when customer scans table QR code:
+     https://2cedric.github.io/sunrisedreams-ordering/?table=1&type=DINE_IN
+══════════════════════════════════════════════════ -->
 <div id="screen-welcome" class="screen active">
   <div class="welcome-bg"></div>
   <div class="welcome-content">
     <div class="logo-wrap">
-      <!-- You can drop your logo image here: <img src="images/logo.png" alt="Sunrisedreams" class="logo-img"> -->
+      <!-- TO ADD YOUR LOGO: replace the two lines below with:
+           <img src="images/logo.png" class="logo-img" alt="Sunrisedreams" /> -->
       <div class="logo-sun">☀</div>
       <h1 class="brand-name">SUNRISE<span>DREAMS</span></h1>
       <p class="brand-tagline">Filipino Cuisine & Beverages</p>
     </div>
-    <button class="btn-start" onclick="App.goToScan()">START ORDER</button>
+
+    <div class="welcome-table-info" id="welcome-table-info"></div>
+
+    <button class="btn-start" onclick="App.newOrder()">NEW ORDER</button>
+    <button class="btn-continue" onclick="App.showContinueInput()">CONTINUE ORDER</button>
     <button class="btn-pos-link" onclick="App.goToPOS()">POS Dashboard →</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     SCREEN 2: QR SCAN
-══════════════════════════════════════════════════════ -->
-<div id="screen-scan" class="screen">
+<!-- ══════════════════════════════════════════════════
+     SCREEN 2: CONTINUE ORDER — input customer ID
+══════════════════════════════════════════════════ -->
+<div id="screen-continue" class="screen">
   <div class="scan-header">
     <button class="btn-back" onclick="App.goTo('welcome')">‹</button>
-    <h2>Scan Table QR Code</h2>
+    <h2>Continue Your Order</h2>
   </div>
-
-  <div class="scan-area">
-    <div id="qr-reader" class="qr-reader-box"></div>
-    <p class="scan-hint">Point your camera at the QR code on your table</p>
-  </div>
-
-  <div class="scan-divider"><span>or select manually</span></div>
-
-  <div class="manual-table-grid">
-    <button class="table-btn" onclick="App.selectTable('TABLE 1','DINE_IN')">Table 1</button>
-    <button class="table-btn" onclick="App.selectTable('TABLE 2','DINE_IN')">Table 2</button>
-    <button class="table-btn" onclick="App.selectTable('TABLE 3','DINE_IN')">Table 3</button>
-    <button class="table-btn" onclick="App.selectTable('TABLE 4','DINE_IN')">Table 4</button>
-    <button class="table-btn" onclick="App.selectTable('TABLE 5','DINE_IN')">Table 5</button>
-    <button class="table-btn" onclick="App.selectTable('TABLE 6','DINE_IN')">Table 6</button>
-    <button class="table-btn" onclick="App.selectTable('TABLE 7','DINE_IN')">Table 7</button>
-    <button class="table-btn" onclick="App.selectTable('TABLE 8','DINE_IN')">Table 8</button>
-    <button class="table-btn take-out" onclick="App.selectTable('TAKE OUT','TAKE_OUT')">Take Out</button>
+  <div class="continue-wrap">
+    <p class="continue-hint">Enter your Customer ID from a previous order receipt.</p>
+    <input id="input-customer-id" type="text" class="customer-id-input"
+           placeholder="e.g. SD-4821" maxlength="10"
+           onkeydown="if(event.key==='Enter') App.lookupCustomer()" />
+    <div id="continue-error" class="continue-error hidden">
+      Customer ID not found. Please check and try again.
+    </div>
+    <button class="btn-start" style="width:100%;margin-top:12px;" onclick="App.lookupCustomer()">
+      FIND MY ORDER
+    </button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════
      SCREEN 3: MENU
-══════════════════════════════════════════════════════ -->
+══════════════════════════════════════════════════ -->
 <div id="screen-menu" class="screen">
   <div class="menu-header">
     <div class="menu-header-top">
       <div>
         <div class="menu-logo-small">☀ Sunrisedreams</div>
         <div id="menu-table-label" class="table-label">TABLE 1 · Dine In</div>
+        <div id="menu-customer-id" class="customer-id-label"></div>
       </div>
-      <button class="btn-cart" onclick="App.goToCart()">
-        🛒 Cart <span id="cart-badge" class="cart-badge hidden">0</span>
-      </button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+        <button class="btn-cart" onclick="App.goToCart()">
+          🛒 Cart <span id="cart-badge" class="cart-badge hidden">0</span>
+        </button>
+        <button class="btn-history" onclick="App.goToHistory()">📋 History</button>
+      </div>
     </div>
     <div class="search-wrap">
-      <input id="search-input" type="text" class="search-bar" placeholder="🔍  Search dishes..." oninput="App.filterMenu(this.value)" />
+      <input id="search-input" type="text" class="search-bar"
+             placeholder="🔍  Search dishes..." oninput="App.filterMenu(this.value)" />
     </div>
     <div class="category-tabs" id="category-tabs"></div>
   </div>
-
   <div class="menu-grid" id="menu-grid"></div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════
      SCREEN 4: ITEM DETAIL
-══════════════════════════════════════════════════════ -->
+══════════════════════════════════════════════════ -->
 <div id="screen-detail" class="screen">
   <button class="btn-back detail-back" onclick="App.goTo('menu')">‹</button>
   <div class="detail-img-wrap">
@@ -91,90 +95,106 @@
     <h2 id="detail-name" class="detail-name"></h2>
     <div id="detail-price" class="detail-price"></div>
     <p id="detail-desc" class="detail-desc"></p>
-
     <div class="allergen-box" id="allergen-box">
       <span class="allergen-label">⚠ ALLERGENS:</span>
       <span id="detail-allergens"></span>
     </div>
-
     <div class="remarks-wrap">
       <label class="remarks-label">REMARKS:</label>
-      <textarea id="detail-remarks" class="remarks-input" placeholder="e.g. less spicy, no onions..."></textarea>
+      <textarea id="detail-remarks" class="remarks-input"
+                placeholder="e.g. less spicy, no onions..."></textarea>
     </div>
-
     <div class="qty-row">
       <button class="qty-btn" onclick="App.changeQty(-1)">−</button>
       <span id="qty-display" class="qty-display">1</span>
       <button class="qty-btn" onclick="App.changeQty(1)">+</button>
     </div>
-
-    <button class="btn-add-cart" id="btn-add-cart" onclick="App.addToCart()">
-      ADD TO CART
-    </button>
+    <button class="btn-add-cart" id="btn-add-cart" onclick="App.addToCart()">ADD TO CART</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
+<!-- ══════════════════════════════════════════════════
      SCREEN 5: CART
-══════════════════════════════════════════════════════ -->
+══════════════════════════════════════════════════ -->
 <div id="screen-cart" class="screen">
   <div class="cart-header">
     <button class="btn-back" onclick="App.goTo('menu')">‹</button>
     <h2>Your Order</h2>
     <span id="cart-table-label" class="cart-table-tag"></span>
   </div>
-
   <div id="cart-items" class="cart-items"></div>
   <div id="cart-empty" class="cart-empty hidden">
     <div style="font-size:3rem;">🛒</div>
     <p>Your cart is empty</p>
     <button class="btn-back-menu" onclick="App.goTo('menu')">Browse Menu</button>
   </div>
-
   <div class="cart-totals" id="cart-totals">
-    <div class="total-row">
-      <span>Subtotal</span><span id="tot-sub">PHP 0.00</span>
-    </div>
-    <div class="total-row">
-      <span>10% Service Charge</span><span id="tot-svc">PHP 0.00</span>
-    </div>
-    <div class="total-row grand">
-      <span>TOTAL</span><span id="tot-grand">PHP 0.00</span>
-    </div>
+    <div class="total-row"><span>Subtotal</span><span id="tot-sub">PHP 0.00</span></div>
+    <div class="total-row"><span>10% Service Charge</span><span id="tot-svc">PHP 0.00</span></div>
+    <div class="total-row grand"><span>TOTAL</span><span id="tot-grand">PHP 0.00</span></div>
   </div>
-
-  <button class="btn-order" id="btn-order" onclick="App.placeOrder()">ORDER</button>
-</div>
-
-<!-- ══════════════════════════════════════════════════════
-     SCREEN 6: ORDER CONFIRMATION
-══════════════════════════════════════════════════════ -->
-<div id="screen-confirm" class="screen">
-  <div class="confirm-wrap">
-    <div class="confirm-icon">✔</div>
-    <h2 class="confirm-title">Order Received!</h2>
-    <p class="confirm-sub">Your order has been sent to the kitchen.</p>
-
-    <div class="confirm-card">
-      <div class="confirm-row"><span>Order ID</span><strong id="conf-id"></strong></div>
-      <div class="confirm-row"><span>Table</span><strong id="conf-table"></strong></div>
-      <div class="confirm-row"><span>Time</span><strong id="conf-time"></strong></div>
-      <div class="confirm-items" id="conf-items"></div>
-      <div class="confirm-row grand-row"><span>TOTAL</span><strong id="conf-total"></strong></div>
-    </div>
-
-    <div class="confirm-status">⏳ Kitchen is preparing your order…</div>
-
-    <div class="confirm-btns">
-      <button class="btn-add-more" onclick="App.goTo('menu')">Add More Items</button>
-      <button class="btn-done" onclick="App.resetSession()">Done</button>
-    </div>
+  <div class="cart-actions">
+    <button class="btn-add-more-items" onclick="App.goTo('menu')">+ Add More Items</button>
+    <button class="btn-order" id="btn-order" onclick="App.checkout()">CHECKOUT</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     SCREEN 7: POS DASHBOARD
-══════════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════
+     SCREEN 6: ORDER HISTORY
+══════════════════════════════════════════════════ -->
+<div id="screen-history" class="screen">
+  <div class="cart-header">
+    <button class="btn-back" onclick="App.goTo('menu')">‹</button>
+    <h2>Order History</h2>
+    <span id="history-customer-id" class="cart-table-tag"></span>
+  </div>
+  <div id="history-list" class="history-list"></div>
+  <div class="cart-actions" style="padding-bottom:40px;">
+    <button class="btn-order" onclick="App.goTo('menu')">ORDER MORE</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 7: CHECKOUT — QR code for cashier
+══════════════════════════════════════════════════ -->
+<div id="screen-checkout" class="screen">
+  <div class="cart-header">
+    <button class="btn-back" onclick="App.goTo('cart')">‹</button>
+    <h2>Show to Cashier</h2>
+  </div>
+  <div class="checkout-wrap">
+    <div class="checkout-card">
+      <div class="checkout-label">ORDER ID</div>
+      <div id="checkout-order-id" class="checkout-order-id"></div>
+      <div id="checkout-table-info" class="checkout-table-info-text"></div>
+
+      <!-- QR code generated here -->
+      <div id="checkout-qr" class="checkout-qr-wrap"></div>
+
+      <div class="checkout-items" id="checkout-items"></div>
+
+      <div class="checkout-totals">
+        <div class="total-row"><span>Subtotal</span><span id="co-sub"></span></div>
+        <div class="total-row"><span>10% Service Charge</span><span id="co-svc"></span></div>
+        <div class="total-row grand"><span>TOTAL</span><span id="co-grand"></span></div>
+      </div>
+
+      <div class="checkout-customer-section">
+        <div class="checkout-small-label">YOUR CUSTOMER ID — save this to continue your order later</div>
+        <div id="checkout-customer-id" class="checkout-customer-id-display"></div>
+      </div>
+    </div>
+
+    <p class="checkout-hint">
+      📋 Show this screen to the cashier to process your payment.
+    </p>
+    <button class="btn-done" onclick="App.finishSession()">DONE — New Session</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     SCREEN 8: POS DASHBOARD
+══════════════════════════════════════════════════ -->
 <div id="screen-pos" class="screen">
   <div class="pos-header">
     <button class="btn-back" onclick="App.goTo('welcome')">‹</button>
@@ -188,14 +208,13 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════
-     TOAST NOTIFICATION
-══════════════════════════════════════════════════════ -->
+<!-- TOAST -->
 <div id="toast" class="toast hidden"></div>
 
-<!-- QR code scanner library -->
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<!-- QR code generator (CDN, no install) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="js/menu-data.js"></script>
+<script src="js/storage.js"></script>
 <script src="js/cart.js"></script>
 <script src="js/app.js"></script>
 </body>

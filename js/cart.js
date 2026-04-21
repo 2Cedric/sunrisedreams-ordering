@@ -1,33 +1,42 @@
 /**
  * CART MANAGER
- * Manages cart state and the POS order list in memory.
- * This is the in-browser "POS receiving" system —
- * replacing the paper slip delivery described in the capstone.
+ * Manages the current session cart in memory.
+ * On checkout, saves to Storage (localStorage).
  */
 
 const CartManager = (() => {
 
-  let cartItems   = [];  // { item, qty, remarks }
-  let posOrders   = [];  // all submitted orders
-  let tableNumber = "TABLE 1";
-  let orderType   = "DINE_IN";
+  let cartItems    = [];
+  let tableNumber  = "TABLE 1";
+  let orderType    = "DINE_IN";
+  let customerId   = null;   // set after createCustomer or lookupCustomer
 
-  // ── Session setup ────────────────────────────────────────
+  // ── Session ──────────────────────────────────────────────
 
-  function setSession(table, type) {
+  function startNewSession(table, type) {
     tableNumber = table;
     orderType   = type;
-    cartItems   = [];  // fresh cart per table session
+    cartItems   = [];
+    // Create a new customer ID in storage
+    customerId  = Storage.createCustomer(table, type);
+    return customerId;
   }
 
-  function getTableNumber() { return tableNumber; }
-  function getOrderType()   { return orderType; }
-  function getDisplayType() { return orderType === "TAKE_OUT" ? "Take Out" : "Dine In"; }
+  function resumeSession(existingCustomerId, table, type) {
+    customerId  = existingCustomerId;
+    tableNumber = table;
+    orderType   = type;
+    cartItems   = [];
+  }
+
+  function getTableNumber()  { return tableNumber; }
+  function getOrderType()    { return orderType; }
+  function getCustomerId()   { return customerId; }
+  function getDisplayType()  { return orderType === "TAKE_OUT" ? "Take Out" : "Dine In"; }
 
   // ── Cart operations ──────────────────────────────────────
 
   function addItem(item, qty, remarks) {
-    // If same item already in cart, increase quantity
     const existing = cartItems.find(c => c.item.id === item.id);
     if (existing) {
       existing.qty += qty;
@@ -41,83 +50,72 @@ const CartManager = (() => {
   }
 
   function updateQty(index, newQty) {
-    if (newQty <= 0) {
-      removeItem(index);
-    } else {
-      cartItems[index].qty = newQty;
-    }
+    if (newQty <= 0) removeItem(index);
+    else cartItems[index].qty = newQty;
   }
 
-  function clearCart() {
-    cartItems = [];
-  }
-
-  function getItems()  { return [...cartItems]; }
-  function isEmpty()   { return cartItems.length === 0; }
+  function clearCart()   { cartItems = []; }
+  function getItems()    { return [...cartItems]; }
+  function isEmpty()     { return cartItems.length === 0; }
 
   function getCount() {
-    return cartItems.reduce((sum, c) => sum + c.qty, 0);
+    return cartItems.reduce((s, c) => s + c.qty, 0);
   }
-
   function getSubtotal() {
-    return cartItems.reduce((sum, c) => sum + (c.item.price * c.qty), 0);
+    return cartItems.reduce((s, c) => s + c.item.price * c.qty, 0);
   }
-
   function getServiceCharge() { return getSubtotal() * 0.10; }
   function getTotal()         { return getSubtotal() + getServiceCharge(); }
 
-  // ── Submit order to POS ──────────────────────────────────
+  // ── Submit (checkout) ────────────────────────────────────
 
   function submitOrder(notes) {
     if (isEmpty()) return null;
 
     const now    = new Date();
-    const timeStr = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-    const idNum  = Math.floor(Math.random() * 9000 + 1000);
+    const timeStr = now.toLocaleTimeString("en-PH", { hour: "2-digit", minute: "2-digit" });
+    const dateStr = now.toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" });
+    const idNum  = Math.floor(Math.random() * 90000 + 10000);
 
     const order = {
-      id:           `#${idNum}`,
-      tableNumber:  tableNumber,
-      orderType:    orderType,
-      displayType:  getDisplayType(),
-      items:        cartItems.map(c => ({
-                      name:     c.item.name,
-                      qty:      c.qty,
-                      price:    c.item.price,
-                      subtotal: c.item.price * c.qty,
-                      remarks:  c.remarks
-                    })),
-      subtotal:     getSubtotal(),
+      id:            `#${idNum}`,
+      customerId:    customerId,
+      tableNumber:   tableNumber,
+      orderType:     orderType,
+      displayType:   getDisplayType(),
+      items:         cartItems.map(c => ({
+                       name:     c.item.name,
+                       qty:      c.qty,
+                       price:    c.item.price,
+                       subtotal: c.item.price * c.qty,
+                       remarks:  c.remarks
+                     })),
+      subtotal:      getSubtotal(),
       serviceCharge: getServiceCharge(),
-      total:        getTotal(),
-      notes:        notes || "",
-      status:       "PENDING",
-      timestamp:    timeStr,
-      createdAt:    Date.now()
+      total:         getTotal(),
+      notes:         notes || "",
+      status:        "PENDING",
+      timestamp:     timeStr,
+      date:          dateStr,
+      createdAt:     Date.now()
     };
 
-    posOrders.push(order);
+    // Save to customer history
+    Storage.addOrderToCustomer(customerId, order);
+    // Save to POS
+    Storage.addPOSOrder(order);
+
     clearCart();
     return order;
   }
 
-  // ── POS order management ─────────────────────────────────
-
-  function getAllOrders()     { return [...posOrders]; }
-  function getActiveOrders() {
-    return posOrders.filter(o => o.status !== "SERVED" && o.status !== "CANCELLED");
-  }
-
-  function updateStatus(orderId, newStatus) {
-    const order = posOrders.find(o => o.id === orderId);
-    if (order) order.status = newStatus;
-  }
-
   // ── Public API ───────────────────────────────────────────
   return {
-    setSession,
+    startNewSession,
+    resumeSession,
     getTableNumber,
     getOrderType,
+    getCustomerId,
     getDisplayType,
     addItem,
     removeItem,
@@ -129,10 +127,7 @@ const CartManager = (() => {
     getSubtotal,
     getServiceCharge,
     getTotal,
-    submitOrder,
-    getAllOrders,
-    getActiveOrders,
-    updateStatus
+    submitOrder
   };
 
 })();
