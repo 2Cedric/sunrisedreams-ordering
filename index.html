@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sunrisedreams Restaurant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 1: WELCOME
+══════════════════════════════════════════════════════ -->
+<div id="screen-welcome" class="screen active">
+  <div class="welcome-bg"></div>
+  <div class="welcome-content">
+    <div class="logo-wrap">
+      <!-- You can drop your logo image here: <img src="images/logo.png" alt="Sunrisedreams" class="logo-img"> -->
+      <div class="logo-sun">☀</div>
+      <h1 class="brand-name">SUNRISE<span>DREAMS</span></h1>
+      <p class="brand-tagline">Filipino Cuisine & Beverages</p>
+    </div>
+    <button class="btn-start" onclick="App.goToScan()">START ORDER</button>
+    <button class="btn-pos-link" onclick="App.goToPOS()">POS Dashboard →</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 2: QR SCAN
+══════════════════════════════════════════════════════ -->
+<div id="screen-scan" class="screen">
+  <div class="scan-header">
+    <button class="btn-back" onclick="App.goTo('welcome')">‹</button>
+    <h2>Scan Table QR Code</h2>
+  </div>
+
+  <div class="scan-area">
+    <div id="qr-reader" class="qr-reader-box"></div>
+    <p class="scan-hint">Point your camera at the QR code on your table</p>
+  </div>
+
+  <div class="scan-divider"><span>or select manually</span></div>
+
+  <div class="manual-table-grid">
+    <button class="table-btn" onclick="App.selectTable('TABLE 1','DINE_IN')">Table 1</button>
+    <button class="table-btn" onclick="App.selectTable('TABLE 2','DINE_IN')">Table 2</button>
+    <button class="table-btn" onclick="App.selectTable('TABLE 3','DINE_IN')">Table 3</button>
+    <button class="table-btn" onclick="App.selectTable('TABLE 4','DINE_IN')">Table 4</button>
+    <button class="table-btn" onclick="App.selectTable('TABLE 5','DINE_IN')">Table 5</button>
+    <button class="table-btn" onclick="App.selectTable('TABLE 6','DINE_IN')">Table 6</button>
+    <button class="table-btn" onclick="App.selectTable('TABLE 7','DINE_IN')">Table 7</button>
+    <button class="table-btn" onclick="App.selectTable('TABLE 8','DINE_IN')">Table 8</button>
+    <button class="table-btn take-out" onclick="App.selectTable('TAKE OUT','TAKE_OUT')">Take Out</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 3: MENU
+══════════════════════════════════════════════════════ -->
+<div id="screen-menu" class="screen">
+  <div class="menu-header">
+    <div class="menu-header-top">
+      <div>
+        <div class="menu-logo-small">☀ Sunrisedreams</div>
+        <div id="menu-table-label" class="table-label">TABLE 1 · Dine In</div>
+      </div>
+      <button class="btn-cart" onclick="App.goToCart()">
+        🛒 Cart <span id="cart-badge" class="cart-badge hidden">0</span>
+      </button>
+    </div>
+    <div class="search-wrap">
+      <input id="search-input" type="text" class="search-bar" placeholder="🔍  Search dishes..." oninput="App.filterMenu(this.value)" />
+    </div>
+    <div class="category-tabs" id="category-tabs"></div>
+  </div>
+
+  <div class="menu-grid" id="menu-grid"></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 4: ITEM DETAIL
+══════════════════════════════════════════════════════ -->
+<div id="screen-detail" class="screen">
+  <button class="btn-back detail-back" onclick="App.goTo('menu')">‹</button>
+  <div class="detail-img-wrap">
+    <div id="detail-img" class="detail-img-placeholder">🍽</div>
+  </div>
+  <div class="detail-body">
+    <h2 id="detail-name" class="detail-name"></h2>
+    <div id="detail-price" class="detail-price"></div>
+    <p id="detail-desc" class="detail-desc"></p>
+
+    <div class="allergen-box" id="allergen-box">
+      <span class="allergen-label">⚠ ALLERGENS:</span>
+      <span id="detail-allergens"></span>
+    </div>
+
+    <div class="remarks-wrap">
+      <label class="remarks-label">REMARKS:</label>
+      <textarea id="detail-remarks" class="remarks-input" placeholder="e.g. less spicy, no onions..."></textarea>
+    </div>
+
+    <div class="qty-row">
+      <button class="qty-btn" onclick="App.changeQty(-1)">−</button>
+      <span id="qty-display" class="qty-display">1</span>
+      <button class="qty-btn" onclick="App.changeQty(1)">+</button>
+    </div>
+
+    <button class="btn-add-cart" id="btn-add-cart" onclick="App.addToCart()">
+      ADD TO CART
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 5: CART
+══════════════════════════════════════════════════════ -->
+<div id="screen-cart" class="screen">
+  <div class="cart-header">
+    <button class="btn-back" onclick="App.goTo('menu')">‹</button>
+    <h2>Your Order</h2>
+    <span id="cart-table-label" class="cart-table-tag"></span>
+  </div>
+
+  <div id="cart-items" class="cart-items"></div>
+  <div id="cart-empty" class="cart-empty hidden">
+    <div style="font-size:3rem;">🛒</div>
+    <p>Your cart is empty</p>
+    <button class="btn-back-menu" onclick="App.goTo('menu')">Browse Menu</button>
+  </div>
+
+  <div class="cart-totals" id="cart-totals">
+    <div class="total-row">
+      <span>Subtotal</span><span id="tot-sub">PHP 0.00</span>
+    </div>
+    <div class="total-row">
+      <span>10% Service Charge</span><span id="tot-svc">PHP 0.00</span>
+    </div>
+    <div class="total-row grand">
+      <span>TOTAL</span><span id="tot-grand">PHP 0.00</span>
+    </div>
+  </div>
+
+  <button class="btn-order" id="btn-order" onclick="App.placeOrder()">ORDER</button>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 6: ORDER CONFIRMATION
+══════════════════════════════════════════════════════ -->
+<div id="screen-confirm" class="screen">
+  <div class="confirm-wrap">
+    <div class="confirm-icon">✔</div>
+    <h2 class="confirm-title">Order Received!</h2>
+    <p class="confirm-sub">Your order has been sent to the kitchen.</p>
+
+    <div class="confirm-card">
+      <div class="confirm-row"><span>Order ID</span><strong id="conf-id"></strong></div>
+      <div class="confirm-row"><span>Table</span><strong id="conf-table"></strong></div>
+      <div class="confirm-row"><span>Time</span><strong id="conf-time"></strong></div>
+      <div class="confirm-items" id="conf-items"></div>
+      <div class="confirm-row grand-row"><span>TOTAL</span><strong id="conf-total"></strong></div>
+    </div>
+
+    <div class="confirm-status">⏳ Kitchen is preparing your order…</div>
+
+    <div class="confirm-btns">
+      <button class="btn-add-more" onclick="App.goTo('menu')">Add More Items</button>
+      <button class="btn-done" onclick="App.resetSession()">Done</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SCREEN 7: POS DASHBOARD
+══════════════════════════════════════════════════════ -->
+<div id="screen-pos" class="screen">
+  <div class="pos-header">
+    <button class="btn-back" onclick="App.goTo('welcome')">‹</button>
+    <h2>POS Dashboard</h2>
+    <span id="pos-active-count" class="pos-count-badge">0 active</span>
+  </div>
+  <div id="pos-orders" class="pos-orders"></div>
+  <div id="pos-empty" class="pos-empty">
+    <div style="font-size:2.5rem">📋</div>
+    <p>No orders yet. Waiting for customers…</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TOAST NOTIFICATION
+══════════════════════════════════════════════════════ -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- QR code scanner library -->
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="js/menu-data.js"></script>
+<script src="js/cart.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
