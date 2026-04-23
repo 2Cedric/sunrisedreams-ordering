@@ -4,6 +4,7 @@ Built based on the UST IE Capstone Design Project (Group 7, 2026).
 Replaces the manual paper slip order transmission described in the paper.
 
 ---
+WORKING LINK (any browser): https://2cedric.github.io/sunrisedreams-ordering/
 
 ## 🚀 How to Run (VS Code)
 
@@ -54,32 +55,6 @@ Confirmation ←── order ID, table, total, kitchen status
 - All submitted orders appear here in real-time
 - Staff can update status: **Pending → Preparing → Ready → Served**
 - Auto-refreshes every 5 seconds
-
----
-
-## 📷 QR Code Format
-
-Each table QR code should encode this JSON:
-```json
-{"table":"TABLE 1","type":"DINE_IN"}
-```
-
-For take-out:
-```json
-{"table":"TAKE OUT","type":"TAKE_OUT"}
-```
-
----
-
-## 🍽 Menu Categories (from capstone paper)
-
-| Category | Items |
-|---|---|
-| Appetizers | Chicken & Chips, Fish & Chips, Fries (Solo/Sharing) |
-| All Day Breakfast | Tocino, Tapa, Hungarian, Longganisa |
-| Main Dish | Beef Caldereta, Crispy Pork Kare-Kare, Beef/Pork Sinigang, Chicken Tinola, Bicol Express, Laing, Lumpiang Shanghai |
-| Merienda | Spaghetti & Meatballs, Lumpiang Gulay, Sunrise Signature Leche Flan |
-| Add-Ons | Egg, Fried Egg, Boiled Egg |
 
 ---
 
