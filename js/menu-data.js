@@ -1,8 +1,24 @@
 /**
  * SUNRISEDREAMS RESTAURANT — MENU DATA
- * All categories and items from the capstone paper.
  * Images: set `img` to a filename in your images/ folder.
  *         Leave as null to show the placeholder emoji instead.
+ *
+ * HOW TO ADD A DISH — copy this block and paste it inside MENU_ITEMS:
+ *   {
+ *     id: 99,                        ← pick a unique number not used by any other item
+ *     name: "Your Dish Name",
+ *     desc: "Short description here.",
+ *     price: 150,                    ← number only, no Php symbol
+ *     category: "MAIN DISH",         ← must exactly match one of the CATEGORIES above
+ *     img: null,                     ← or "images/your_photo.jpg"
+ *     emoji: "🍽",                   ← fallback if no photo
+ *     allergens: ["Gluten"],         ← list allergens, or [] for none
+ *     available: true                ← set false to grey it out
+ *   },
+ *
+ * HOW TO REMOVE A DISH — delete the entire block from { to }, including the comma after }
+ *
+ * HOW TO EDIT — just change the value after the colon on any line
  */
 
 const CATEGORIES = [
@@ -10,6 +26,7 @@ const CATEGORIES = [
   "ALL DAY BREAKFAST",
   "MAIN DISH",
   "MERIENDA",
+  "DRINKS",
   "ADD-ONS"
 ];
 
@@ -24,8 +41,7 @@ const MENU_ITEMS = [
     desc: "Crispy chicken pieces served with golden fries.",
     price: 175,
     category: "APPETIZERS",
-    img: null,          // e.g. "images/chicken_chips.jpg"
-    emoji: "🍗",
+    img: null,
     allergens: ["Gluten"],
     available: true
   },
@@ -33,10 +49,9 @@ const MENU_ITEMS = [
     id: 2,
     name: "Fish and Chips",
     desc: "Beer-battered fish fillet served with crispy fries.",
-    price: 185,
+    price: 335,
     category: "APPETIZERS",
-    img: null,
-    emoji: "🐟",
+    img: "images/fish_chips.jpg",
     allergens: ["Seafood", "Gluten"],
     available: true
   },
@@ -47,7 +62,6 @@ const MENU_ITEMS = [
     price: 85,
     category: "APPETIZERS",
     img: null,
-    emoji: "🍟",
     allergens: [],
     available: true
   },
@@ -58,7 +72,6 @@ const MENU_ITEMS = [
     price: 145,
     category: "APPETIZERS",
     img: null,
-    emoji: "🍟",
     allergens: [],
     available: true
   },
@@ -73,19 +86,17 @@ const MENU_ITEMS = [
     price: 195,
     category: "ALL DAY BREAKFAST",
     img: null,
-    emoji: "🍳",
     allergens: ["Pork"],
     available: true
   },
   {
     id: 6,
-    name: "Tapa",
+    name: "Beef Tapa",
     desc: "Marinated beef strips served with garlic rice and egg.",
-    price: 210,
+    price: 299,
     category: "ALL DAY BREAKFAST",
-    img: null,
-    emoji: "🥩",
-    allergens: ["Beef"],
+    img: "images/tapa.jpg",
+    allergens: ["Beef", "Egg"],
     available: true
   },
   {
@@ -95,7 +106,6 @@ const MENU_ITEMS = [
     price: 190,
     category: "ALL DAY BREAKFAST",
     img: null,
-    emoji: "🌭",
     allergens: ["Pork", "Gluten"],
     available: true
   },
@@ -106,7 +116,6 @@ const MENU_ITEMS = [
     price: 185,
     category: "ALL DAY BREAKFAST",
     img: null,
-    emoji: "🌭",
     allergens: ["Pork"],
     available: true
   },
@@ -121,18 +130,16 @@ const MENU_ITEMS = [
     price: 415,
     category: "MAIN DISH",
     img: null,
-    emoji: "🥘",
     allergens: ["Beef", "Gluten"],
     available: true
   },
   {
     id: 10,
-    name: "Crispy Pork Kare-Kare",
+    name: "Crispy Kare-Kare",
     desc: "Crispy pork belly in classic peanut sauce with bagoong.",
-    price: 450,
+    price: 459,
     category: "MAIN DISH",
-    img: null,
-    emoji: "🍲",
+    img: "images/crispy_pork_karekare.jpg",
     allergens: ["Pork", "Peanut", "Seafood"],
     available: true
   },
@@ -143,7 +150,6 @@ const MENU_ITEMS = [
     price: 440,
     category: "MAIN DISH",
     img: null,
-    emoji: "🍜",
     allergens: ["Beef"],
     available: true
   },
@@ -154,19 +160,17 @@ const MENU_ITEMS = [
     price: 425,
     category: "MAIN DISH",
     img: null,
-    emoji: "🍜",
     allergens: ["Pork"],
     available: true
   },
   {
     id: 13,
-    name: "Chicken Tinola",
-    desc: "Ginger-based broth with chicken, malunggay, and sayote.",
-    price: 355,
+    name: "Pork Steak",
+    desc: "Pork chop simmered in soy sauce-calamansi marinade with egg",
+    price: 425,
     category: "MAIN DISH",
-    img: null,
-    emoji: "🍵",
-    allergens: ["Chicken"],
+    img: "images/pork_steak.jpg",
+    allergens: ["Pork", "Egg"],
     available: true
   },
   {
@@ -176,7 +180,6 @@ const MENU_ITEMS = [
     price: 200,
     category: "MAIN DISH",
     img: null,
-    emoji: "🌶",
     allergens: ["Pork", "Coconut"],
     available: true
   },
@@ -187,7 +190,6 @@ const MENU_ITEMS = [
     price: 215,
     category: "MAIN DISH",
     img: null,
-    emoji: "🥬",
     allergens: ["Coconut"],
     available: true
   },
@@ -198,7 +200,6 @@ const MENU_ITEMS = [
     price: 335,
     category: "MAIN DISH",
     img: null,
-    emoji: "🥢",
     allergens: ["Pork", "Gluten"],
     available: true
   },
@@ -208,35 +209,56 @@ const MENU_ITEMS = [
   // ──────────────────────────────────────────────
   {
     id: 17,
-    name: "Spaghetti and Meatballs",
-    desc: "Filipino-style sweet spaghetti with juicy pork meatballs.",
-    price: 185,
+    name: "Grilled Cheese Sandwich",
+    desc: "Classic grilled cheese sandwich with crispy chips.",
+    price: 139,
     category: "MERIENDA",
-    img: null,
-    emoji: "🍝",
-    allergens: ["Gluten", "Pork"],
+    img: "images/grilled_cheese.jpg",
+    allergens: ["Dairy", "Gluten"],
     available: true
   },
   {
     id: 18,
     name: "Lumpiang Gulay",
-    desc: "Fresh vegetable spring roll served with sweet sauce.",
-    price: 120,
+    desc: "Fresh vegetable spring roll served with vinegar sauce.",
+    price: 299,
     category: "MERIENDA",
-    img: null,
-    emoji: "🥗",
+    img: "images/lumpiang_gulay.jpg",
     allergens: ["Gluten"],
     available: true
   },
+
+  // ──────────────────────────────────────────────
+  // DRINKS
+  // ──────────────────────────────────────────────
   {
     id: 19,
     name: "Sunrise Signature Leche Flan",
     desc: "Sunrisedreams' best-selling signature leche flan drink. Must-try!",
     price: 233,
-    category: "MERIENDA",
-    img: null,
-    emoji: "🧋",
+    category: "DRINKS",
+    img: "images/leche_flan.jpg",
     allergens: ["Dairy", "Egg"],
+    available: true
+  },
+  {
+    id: 23,
+    name: "Blended Dark Chocolate",
+    desc: "Rich and creamy blended dark chocolate drink.",
+    price: 209,
+    category: "DRINKS",
+    img: "images/blended_dark_chocolate.jpg",
+    allergens: ["Dairy"],
+    available: true
+  },
+  {
+    id: 24,
+    name: "Hot Mocha",
+    desc: "Classic hot mocha made with espresso and chocolate.",
+    price: 133,
+    category: "DRINKS",
+    img: "images/hot_mocha.jpg",
+    allergens: ["Dairy"],
     available: true
   },
 
@@ -250,7 +272,6 @@ const MENU_ITEMS = [
     price: 35,
     category: "ADD-ONS",
     img: null,
-    emoji: "🍳",
     allergens: ["Egg"],
     available: true
   },
@@ -261,7 +282,6 @@ const MENU_ITEMS = [
     price: 35,
     category: "ADD-ONS",
     img: null,
-    emoji: "🍳",
     allergens: ["Egg"],
     available: true
   },
@@ -272,7 +292,6 @@ const MENU_ITEMS = [
     price: 30,
     category: "ADD-ONS",
     img: null,
-    emoji: "🥚",
     allergens: ["Egg"],
     available: true
   }
