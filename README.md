@@ -69,40 +69,6 @@ For take-out:
 {"table":"TAKE OUT","type":"TAKE_OUT"}
 ```
 
-**Generate QR codes for free at:** https://www.qr-code-generator.com/
-- Select "Text" type
-- Paste the JSON above
-- Print and laminate for each table
-
----
-
-## 🖼 Adding Real Food Photos
-
-1. Create an `images/` folder inside the project
-2. Add your photos (e.g. `chicken_chips.jpg`, `beef_caldereta.jpg`)
-3. In `js/menu-data.js`, update the `img` field for each item:
-   ```js
-   img: "images/chicken_chips.jpg",
-   ```
-4. Images display at 1:1 ratio in the menu grid and full-width in item detail
-
----
-
-## 📁 Project Structure
-
-```
-sunrisedreams-ordering/
-├── index.html          ← all screens in one file
-├── css/
-│   └── style.css       ← warm Filipino restaurant aesthetic
-├── js/
-│   ├── menu-data.js    ← all menu items (categories, prices, allergens)
-│   ├── cart.js         ← CartManager singleton (cart + POS order list)
-│   └── app.js          ← main controller (navigation, rendering, QR)
-├── images/             ← create this folder and add your food photos
-└── README.md
-```
-
 ---
 
 ## 🍽 Menu Categories (from capstone paper)
